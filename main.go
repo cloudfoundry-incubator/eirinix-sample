@@ -39,7 +39,7 @@ var rootCmd = &cobra.Command{
 				Port:                webhookPort,
 				KubeConfig:          kubeConfig,
 				Logger:              log,
-				OperatorFingerprint: "my-extension-set",
+				OperatorFingerprint: "eirini-x-helloworld",
 			})
 
 		x.AddExtension(helloworld.New())
