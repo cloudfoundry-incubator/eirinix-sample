@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: eirini-helloworld-extension
+  labels:
+    app: eirini-helloworld-extension
+spec:
+  serviceAccountName: "eirini-helloworld-extension"
+  containers:
+   - image: eirinix-sample-extension
+     args: ["-w", "10.96.0.239", "-p", "4545", "-n", "default"]
+     name: eirini-helloworld-extension
+     imagePullPolicy: Never
+  restartPolicy: Always
