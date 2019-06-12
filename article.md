@@ -1,4 +1,4 @@
-# How to build CF Eirini Extensions with Eirinix
+# How to build Cloud Foundry Eirini Extensions with Eirinix
 
 Working with Eirini and Cloud Foundry is really exciting.
 
@@ -42,7 +42,13 @@ The same approach could be taken, for example to inject sidecar containers for e
 
 What the extension should do then, is just modifying the POD definition, going over all the existing containers, and append the environment variable.
 
-Let's create a new project for our extension, here in after called _eirinix-helloworld_, and we assume the repository path is _github.com/eirinix/eirinix-helloworld_,
+
+### Requirements
+
+* Golang (or Docker)
+* Minikube (for testing)
+
+Let's create a directory in the system for our extension, here in after called _eirinix-helloworld_, and we assume the repository path ideally is _github.com/eirinix/eirinix-helloworld_,
 it basically will be composed of two files: one which is our ```main.go```, and will run the extension, and one that holds the Extension logic ```hello/helloworld.go```.
 
 That's our tree structure:
@@ -56,7 +62,9 @@ eirinix-heloworld
 1 directory, 2 files
 ```
 
-### hello/helloworld.go:
+### 1) Create hello/helloworld.go
+
+Create ```hello/helloworld.go``` and put the following content:
 
 ```golang
 package hello
@@ -101,14 +109,17 @@ Every change that we want to commit over a POD will be done to ```podCopy```, an
 
 To keep things simple, we will create a ```main.go``` files which just starts our Extension with hardcoded cluster connection values.
 
-Our ```main.go``` will be very simple, we just need at this point to register our Extension, and start the Eirinix Extension Manager.
+### 2) Create main.go
 
-### main.go:
+Our ```main.go``` will be very simple, we just need at this point to register our Extension, and start the Eirinix Extension Manager.
 
 ```golang
 package main
 
 import (
+
+    "os"
+
     eirinix "github.com/SUSE/eirinix"
 
     // Change your import path here!
@@ -121,7 +132,7 @@ func main() {
                 Namespace:           "default",
                 Host:                "10.0.2.2",
                 Port:                3000,
-                KubeConfig:          "~/.kube/config",
+                KubeConfig:          os.Getenv("KUBECONFIG"),
                 OperatorFingerprint: "eirini-x-helloworld",
             })
 
@@ -136,10 +147,63 @@ In our case, we will set it to ```10.0.2.2``` as we will use later minikube to t
 
 ```Port``` it is the port where the Manager server is listening to. Can be set to any value, just make sure that port is reachable if you run this inside a cluster or not declined by any fw rule.
 
-```KubeConfig``` accepts a path to a Kubernetes config file, or otherwise omit it for in-cluster connection.
+```KubeConfig``` accepts a path to a Kubernetes config file, or otherwise omit it for in-cluster connection. We will read it from the environment variable ```KUBECONFIG``` in this case.
 
 ```OperatorFingerprint``` It's a unique identifier for your operator. It can be any arbitrary value. You need to set this only in the case you are planning to run more than one manager in the same cluster (in different PODs).
 
 With ```x.AddExtension(&helloworld.Extension{})``` we are adding our Extension to the manager, later on the Manager will build a mutating webhook from it and will run it to serve requests. You can add more extension in the same process.
 
 ```x.Start()``` starts the main loop. It returns an error in case there were runtime issues (connection failures to k8s, etc. )
+
+### 3) Build the Extension
+
+In order to build the extension we need also to provide the dependency our project relies on. In this example we will use ```go mod```.
+
+
+### 4) Build it!
+
+    $> echo 'module github.com/eirinix/eirinix-helloworld' > go.mod
+    $> go get github.com/SUSE/eirinix
+    $> go build
+
+If you don't have Golang installed in your machine, you can build your project by running the steps above in a Golang container e.g.:
+
+    $> docker run -v $PWD:/eirinix-helloworld --workdir /eirinix-helloworld --rm -ti golang /bin/bash
+
+We should have now a new binary in our project folder, ```eirinix-helloworld```. 
+
+### 5) Run
+
+It's time to start minikube
+
+    $> minikube start
+
+Now, we can finally run our extension:
+
+    $> ./eirinix-helloworld
+
+
+### 6) (Mock) Test it
+
+Let's try to create a POD that looks like an Eirini app. We will spawn a busybox image that will run enough to let us inspect it. In another terminal run:
+
+    $> cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: Pod
+    metadata:
+        name: eirini-fake-app
+        labels:
+           source_type: APP
+    spec:
+        containers:
+            - image: busybox:1.28.4
+              command:
+                - sleep
+                - "3600"
+              name: eirini-fake-app
+        restartPolicy: Always
+    EOF
+
+And after few secs, inspect the pod, we should be able to see our environment variable setted by our Extension:
+
+    $> kubectl describe pod eirini-fake-app
