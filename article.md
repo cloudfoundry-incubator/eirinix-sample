@@ -18,7 +18,7 @@ In this article we will see how to build a simple Extension for Eirini with Eiri
 
 ---
 
-**Note**: The full sample that will be realized in this article can be found [here](https://github.com/mudler/eirinix-sample-extension).
+**Note**: The full sample that will be realized in this article can be found [here](https://github.com/SUSE/eirinix-sample).
 
 ## Mutating webhooks
 
