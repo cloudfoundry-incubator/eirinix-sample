@@ -114,7 +114,7 @@ The following steps assumes you have the repository cloned and that is your work
 
 ### 2) Create the service
 
-    $> kubectl apply -f contrib/eirinix-sample-service.yaml
+    $> kubectl apply -f contrib/eirinix-sample-extension-service.yaml
 
 ### 3) Set up role permissions
 
@@ -140,7 +140,7 @@ Or in alternative, for testing you can also set broader permissions, and drop ``
 
 Now that the roles are setted up, we can run the Extension pod
 
-    $> kubectl apply -f contrib/eirinix-sample.yaml
+    $> kubectl apply -f contrib/eirinix-sample-extension.yaml
 
 Verify also that the extension is running:
 
