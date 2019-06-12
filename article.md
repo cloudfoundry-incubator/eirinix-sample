@@ -155,12 +155,7 @@ With ```x.AddExtension(&helloworld.Extension{})``` we are adding our Extension t
 
 ```x.Start()``` starts the main loop. It returns an error in case there were runtime issues (connection failures to k8s, etc. )
 
-### 3) Build the Extension
-
-In order to build the extension we need also to provide the dependency our project relies on. In this example we will use ```go mod```.
-
-
-### 4) Build it!
+### 3) Build it!
 
     $> echo 'module github.com/eirinix/eirinix-helloworld' > go.mod
     $> go get github.com/SUSE/eirinix
@@ -172,7 +167,7 @@ If you don't have Golang installed in your machine, you can build your project b
 
 We should have now a new binary in our project folder, ```eirinix-helloworld```. 
 
-### 5) Run
+### 4) Run
 
 It's time to start minikube
 
@@ -183,7 +178,7 @@ Now, we can finally run our extension:
     $> ./eirinix-helloworld
 
 
-### 6) (Mock) Test it
+### 5) (Mock) Test it
 
 Let's try to create a POD that looks like an Eirini app. We will spawn a busybox image that will run enough to let us inspect it. In another terminal run:
 
