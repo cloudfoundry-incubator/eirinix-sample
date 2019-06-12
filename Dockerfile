@@ -1,7 +1,7 @@
 FROM golang
 WORKDIR /tmp/build
-RUN git clone https://github.com/mudler/eirinix-sample-extension && \
-    cd eirinix-sample-extension && \
+RUN git clone https://github.com/SUSE/eirinix-sample && \
+    cd eirinix-sample && \
     go build
 
-ENTRYPOINT ["/tmp/build/eirinix-sample-extension/eirinix-sample-extension"]
+ENTRYPOINT ["/tmp/build/eirinix-sample/eirinix-sample"]

@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
-	helloworld "github.com/mudler/eirinix-sample-extension/helloworld"
+	helloworld "github.com/SUSE/eirinix-sample/helloworld"
 )
 
 var log *zap.SugaredLogger
 var rootCmd = &cobra.Command{
-	Use:   "eirinix-sample-extension",
+	Use:   "eirinix-sample",
 	Short: "hello-world extension for Eirini",
 	Run: func(cmd *cobra.Command, args []string) {
 		defer log.Sync()

@@ -1,4 +1,4 @@
-module github.com/mudler/eirinix-sample-extension
+module github.com/SUSE/eirinix-sample
 
 require (
 	code.cloudfoundry.org/cf-operator v0.1.0
