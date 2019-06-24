@@ -110,7 +110,7 @@ The following steps assumes you have the repository cloned and that is your work
 ### 1) Build the docker image
 
     $> eval $(minikube docker-env)
-    $> docker build --rm -t eirinix-sample .
+    $> docker build --rm -t eirinix-sample-extension .
 
 ### 2) Create the service
 
