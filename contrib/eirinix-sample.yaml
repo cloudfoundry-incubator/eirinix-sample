@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      creationTimestamp: null
+      name: "eirini-helloworld-extension"
+    rules:
+    - apiGroups:
+      - '*'
+      resources:
+      - '*'
+      verbs:
+      - '*'
+  - kind: ClusterRoleBinding
+    apiVersion: rbac.authorization.k8s.io/v1
+    metadata:
+      name: "eirini-helloworld-extension"
+      namespace: "default"
+    roleRef:
+      kind: ClusterRole
+      name: "eirini-helloworld-extension"
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+    - kind: ServiceAccount
+      name: "eirini-helloworld-extension"
+      namespace: "default"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eirini-helloworld-extension-service
+spec:
+  selector:
+    app: eirini-helloworld-extension
+  ports:
+  - protocol: TCP
+    port: 4545
+    targetPort: 4545
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "eirini-helloworld-extension"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: eirini-helloworld-extension
+  labels:
+    app: eirini-helloworld-extension
+spec:
+  serviceAccountName: "eirini-helloworld-extension"
+  containers:
+   - image: eirinix-sample-extension
+     name: eirini-helloworld-extension
+     imagePullPolicy: Never
+  restartPolicy: Always
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: eirini-helloworld-extension
+subjects:
+- kind: ServiceAccount
+  name: eirini-helloworld-extension
+roleRef:
+  kind: Role
+  name: eirini-helloworld-extension
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: eirini-helloworld-extension
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - endpoints
+  - persistentvolumeclaims
+  - events
+  - configmaps
+  - secrets
+  - namespaces
+  verbs:
+    - '*'
