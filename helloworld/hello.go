@@ -9,7 +9,6 @@ import (
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
-	"sigs.k8s.io/controller-runtime/pkg/webhook/admission/types"
 )
 
 // Extension changes pod definitions
@@ -21,10 +20,10 @@ func New() eirinix.Extension {
 }
 
 // Handle manages volume claims for ExtendedStatefulSet pods
-func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager, pod *corev1.Pod, req types.Request) types.Response {
+func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager, pod *corev1.Pod, req admission.Request) admission.Response {
 
 	if pod == nil {
-		return admission.ErrorResponse(http.StatusBadRequest, errors.New("No pod could be decoded from the request"))
+		return admission.Errored(http.StatusBadRequest, errors.New("No pod could be decoded from the request"))
 	}
 
 	log := eiriniManager.GetLogger().Named("Hello world!")
@@ -36,5 +35,5 @@ func (ext *Extension) Handle(ctx context.Context, eiriniManager eirinix.Manager,
 		c := &podCopy.Spec.Containers[i]
 		c.Env = append(c.Env, corev1.EnvVar{Name: "STICKY_MESSAGE", Value: "Eirinix is awesome!"})
 	}
-	return admission.PatchResponse(pod, podCopy)
+	return eiriniManager.PatchFromPod(req, podCopy)
 }
